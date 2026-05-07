@@ -1,90 +1,137 @@
-# Fitness Tracker
+<div align="center">
 
-A fitness tracking web application that allows users to log workouts, view their history, and track progress over time.
+<img src="https://img.shields.io/badge/JavaScript-ES2022-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" />
+<img src="https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white" />
+<img src="https://img.shields.io/badge/Chart.js-4-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white" />
+<img src="https://img.shields.io/badge/CSS3-Dark%20Theme-1572B6?style=for-the-badge&logo=css3&logoColor=white" />
+
+<br /><br />
+
+# FitTrack
+
+**A full-stack workout logger — log sets, track PRs, visualise progress**
+
+*Vanilla JS · Node/Express REST API · Chart.js · File-based persistence*
+
+</div>
+
+---
+
+## Overview
+
+FitTrack is a clean, dark-themed fitness tracking web app. Log every workout with exercise, category, sets, reps, and weight — the app automatically highlights personal records, calculates total volume, and charts your weight progression over time.
+
+Works **standalone** (data in localStorage) or as a **full-stack app** with the Node.js backend for persistent, cross-device storage.
 
 ## Features
 
-- Add new workouts with exercise name, weight, and reps
-- View workout history in a table format
-- Delete workouts from history
-- Visualize progress with a line chart showing weight progression
-- Responsive design with a dark theme
+| | Feature |
+|--|---------|
+| **Log workouts** | Exercise name, category, sets × reps, weight, date, optional notes |
+| **Personal records** | PR badge auto-applied when a weight is the highest ever for that exercise |
+| **Stats dashboard** | Total workouts · this week · total volume lifted · unique exercises |
+| **Progress chart** | Line chart (weight over time per exercise) or bar chart (weekly workout count) |
+| **Smart search** | Filter history by exercise name or muscle category in real-time |
+| **Offline mode** | Falls back to localStorage automatically if the backend isn't running |
+| **REST API** | Express backend with JSON file persistence, no database required |
+| **Responsive** | Works on desktop and mobile |
 
 ## Tech Stack
 
-### Frontend
-- HTML5
-- CSS3
-- JavaScript (ES6+)
-- Chart.js for data visualization
+```
+Frontend                  Backend
+────────                  ───────
+HTML5 / CSS3              Node.js
+Vanilla JavaScript        Express 4
+Chart.js 4                JSON file persistence (no DB needed)
+localStorage fallback     REST API (GET / POST / DELETE)
+```
 
-### Backend
-- Node.js
-- Express.js
-- CORS for cross-origin requests
+## Getting Started
+
+### Frontend only (no backend needed)
+
+Just open `frontend/index.html` in a browser — or use VS Code Live Server. Data is saved to localStorage automatically.
+
+### Full-stack setup
+
+**1 — Clone**
+```bash
+git clone https://github.com/KirilShy/fitness-tracker.git
+cd fitness-tracker
+```
+
+**2 — Backend**
+```bash
+cd backend
+cp .env.example .env
+npm install
+npm run dev    # → http://localhost:3000
+```
+
+**3 — Frontend**
+
+Open `frontend/index.html` with Live Server or any static server. The app detects the backend automatically and switches to API mode — you'll see the **API connected** indicator in the header.
+
+> Without the backend running, the app shows **Offline mode** and saves to browser localStorage.
+
+---
 
 ## Project Structure
 
 ```
 fitness-tracker/
-├── README.md
 ├── backend/
+│   ├── .env.example
 │   ├── package.json
-│   ├── server.js
+│   ├── server.js                 # Express entry point
+│   ├── data/
+│   │   └── workouts.json         # Auto-created on first run
 │   ├── controllers/
-│   │   └── workoutController.js
+│   │   └── workoutController.js  # Request handlers
 │   ├── models/
-│   │   └── workoutModel.js
+│   │   └── workoutModel.js       # File-based CRUD
 │   └── routes/
-│       └── workouts.js
+│       └── workouts.js           # Route definitions
+│
 └── frontend/
-    ├── index.html
-    ├── script.js
-    └── style.css
+    ├── index.html                # App shell
+    ├── style.css                 # Dark theme, CSS custom properties
+    └── script.js                 # All app logic (fetch + localStorage fallback)
 ```
 
-## Installation
+## API Reference
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/KirilShy/fitness-tracker.git
-   cd fitness-tracker
-   ```
+Base URL: `http://localhost:3000`
 
-2. Install backend dependencies:
-   ```
-   cd backend
-   npm install
-   ```
+| Method | Endpoint | Body | Description |
+|--------|----------|------|-------------|
+| `GET` | `/api/workouts` | — | Get all workouts (sorted by date desc) |
+| `POST` | `/api/workouts` | `{ exercise, category, sets, reps, weight, date, notes }` | Create workout |
+| `DELETE` | `/api/workouts/:id` | — | Delete workout by ID |
+| `GET` | `/api/health` | — | Health check |
 
-## Running the Application
+**Workout object**
+```json
+{
+  "id": "m1hx3kab",
+  "exercise": "Bench Press",
+  "category": "Chest",
+  "sets": 4,
+  "reps": 8,
+  "weight": 100,
+  "date": "2026-05-07",
+  "notes": "Paused reps",
+  "createdAt": "2026-05-07T10:30:00.000Z"
+}
+```
 
-### Frontend
-Open `frontend/index.html` in your web browser. The application uses localStorage for data persistence.
+**Categories:** `Chest` · `Back` · `Legs` · `Shoulders` · `Arms` · `Core` · `Cardio` · `Other`
 
-### Backend
-1. Navigate to the backend directory:
-   ```
-   cd backend
-   ```
+---
 
-2. Start the server:
-   ```
-   node server.js
-   ```
+<div align="center">
 
-3. The API will be available at `http://localhost:3000`
+Built by [Kiril Shynkarenko](https://github.com/KirilShy) · Portfolio project
 
-## API Endpoints
-
-- `GET /workouts` - Retrieve all workouts
-- `POST /workouts` - Add a new workout
-- `DELETE /workouts/:id` - Delete a workout by index
-
-## Future Enhancements
-
-- Integrate frontend with backend API
-- Add user authentication
-- Implement database storage (MongoDB/PostgreSQL)
-- Add more detailed workout tracking (sets, duration, etc.)
-- User dashboard with statistics
+</div>

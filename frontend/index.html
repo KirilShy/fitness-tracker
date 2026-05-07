@@ -1,54 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fitness Tracker</title>
-    <link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FitTrack — Workout Logger</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    
-    <header>
-        <h1>Fitness Tracker</h1>
-    </header>
 
-    <div class="container">
-
-    <section class="form-section">
-        <h2>Add Workout</h2>
-
-        <form id="workoutForm">
-            <input type="text" id="exercise" placeholder="Exercise (Bench Press)" required>
-            <input type="number" id="weight" placeholder="Weight (kg)" required>
-            <input type="number" id="reps" placeholder="Reps" required>
-            <button type="submit">Add Workout</button>
-        </form>
-    </section>
-
-    <section class="history-section">
-        <h2>Workout History</h2>
-        
-        <table id="workoutTable">
-            <thead>
-                <tr>
-                    <th>Exercise</th>
-                    <th>Weight (kg)</th>
-                    <th>Reps</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="workoutTable">
-            </tbody>
-        </table>
-    </section>
-
-    <section class="stats-section">
-        <h2>Progress</h2>
-
-        <canvas id="progressChart"></canvas>
-    </section>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+        </svg>
+        <span>FitTrack</span>
+      </div>
+      <p class="tagline">Log workouts &middot; Track progress &middot; Hit PRs</p>
+      <div class="mode-pill" id="modePill">
+        <span class="mode-dot"></span>
+        <span id="modeLabel">Connecting…</span>
+      </div>
     </div>
-    <script src="script.js"></script>
+  </header>
+
+  <div class="offline-banner hidden" id="offlineBanner">
+    ⚡ Backend offline — data is saved locally in your browser
+  </div>
+
+  <main class="container">
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value" id="stat-total">—</div>
+        <div class="stat-label">Total Workouts</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-week">—</div>
+        <div class="stat-label">This Week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-volume">—</div>
+        <div class="stat-label">Total Volume</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-exercises">—</div>
+        <div class="stat-label">Exercises Tracked</div>
+      </div>
+    </div>
+
+    <!-- Form + History -->
+    <div class="main-grid">
+
+      <!-- Log form -->
+      <div class="panel">
+        <h2 class="panel-title">Log Workout</h2>
+        <form id="workoutForm" autocomplete="off">
+
+          <div class="field">
+            <label for="exercise">Exercise</label>
+            <input type="text" id="exercise" list="exerciseSuggestions"
+              placeholder="e.g. Bench Press" required />
+            <datalist id="exerciseSuggestions">
+              <option value="Bench Press" /><option value="Incline Bench Press" />
+              <option value="Squat" /><option value="Front Squat" />
+              <option value="Deadlift" /><option value="Romanian Deadlift" />
+              <option value="Overhead Press" /><option value="Pull-up" />
+              <option value="Barbell Row" /><option value="Lat Pulldown" />
+              <option value="Dumbbell Curl" /><option value="Tricep Pushdown" />
+              <option value="Leg Press" /><option value="Leg Curl" />
+              <option value="Calf Raise" /><option value="Plank" />
+              <option value="Running" /><option value="Cycling" />
+            </datalist>
+          </div>
+
+          <div class="field">
+            <label for="category">Category</label>
+            <select id="category">
+              <option value="Chest">Chest</option>
+              <option value="Back">Back</option>
+              <option value="Legs">Legs</option>
+              <option value="Shoulders">Shoulders</option>
+              <option value="Arms">Arms</option>
+              <option value="Core">Core</option>
+              <option value="Cardio">Cardio</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="sets">Sets</label>
+              <input type="number" id="sets" min="1" max="30" placeholder="4" required />
+            </div>
+            <div class="field">
+              <label for="reps">Reps</label>
+              <input type="number" id="reps" min="1" max="200" placeholder="8" required />
+            </div>
+            <div class="field">
+              <label for="weight">Weight (kg)</label>
+              <input type="number" id="weight" min="0" step="0.5" placeholder="100" required />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="date">Date</label>
+            <input type="date" id="date" required />
+          </div>
+
+          <div class="field">
+            <label for="notes">Notes <span class="optional">optional</span></label>
+            <input type="text" id="notes" placeholder="e.g. Paused reps, RPE 8, new PR" />
+          </div>
+
+          <button type="submit" class="btn-submit" id="submitBtn">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            Log Workout
+          </button>
+
+        </form>
+      </div>
+
+      <!-- History -->
+      <div class="panel history-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">History</h2>
+          <div class="search-wrap">
+            <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <input type="text" id="searchInput" placeholder="Filter by exercise or category…" />
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Exercise</th>
+                <th>Category</th>
+                <th>Sets × Reps</th>
+                <th>Weight</th>
+                <th>Volume</th>
+                <th><span class="sr-only">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody id="workoutTableBody">
+              <tr><td colspan="7" class="empty-row">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Chart -->
+    <div class="panel chart-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Progress</h2>
+          <p class="panel-sub" id="chartSub">Workouts logged per week</p>
+        </div>
+        <select id="chartExercise" title="Filter chart by exercise" aria-label="Filter chart by exercise">
+          <option value="">All exercises (weekly)</option>
+        </select>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="progressChart"></canvas>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
